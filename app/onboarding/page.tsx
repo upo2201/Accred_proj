@@ -1,0 +1,424 @@
+"use client"
+
+import { useState, Suspense } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Shield, ArrowRight, ArrowLeft, User, Mail, Building2, GraduationCap, FileText, CheckCircle2, Loader2, Lock } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import Link from "next/link"
+import { useSearchParams, useRouter } from "next/navigation"
+
+interface FormData {
+  name: string
+  email: string
+  // Institution specific
+  institutionName?: string
+  institutionType?: string
+  accreditationId?: string
+  // Student specific
+  studentId?: string
+  university?: string
+}
+
+function OnboardingContent() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const role = searchParams.get("role") as "student" | "institution" | null
+  
+  const [step, setStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    institutionName: "",
+    institutionType: "",
+    accreditationId: "",
+    studentId: "",
+    university: ""
+  })
+
+  const totalSteps = role === "institution" ? 3 : 3
+
+  const updateFormData = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleNext = () => {
+    if (step < totalSteps) {
+      setStep(step + 1)
+    }
+  }
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(step - 1)
+    }
+  }
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    setIsSubmitting(false)
+    
+    // Redirect to appropriate dashboard
+    if (role === "institution") {
+      router.push("/dashboard/institution")
+    } else {
+      router.push("/dashboard/student")
+    }
+  }
+
+  const canProceed = () => {
+    switch (step) {
+      case 1:
+        return formData.name.trim() !== "" && formData.email.trim() !== ""
+      case 2:
+        if (role === "institution") {
+          return formData.institutionName?.trim() !== "" && formData.institutionType?.trim() !== ""
+        }
+        return formData.studentId?.trim() !== "" && formData.university?.trim() !== ""
+      case 3:
+        return true
+      default:
+        return false
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Gradient Background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 left-1/3 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-40 right-1/4 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
+      </div>
+
+      {/* Header */}
+      <header className="relative border-b border-border/50 bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <Link href="/role-select" className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm">Back</span>
+            </Link>
+            <div className="h-6 w-px bg-border" />
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <Shield className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <span className="font-semibold">ACCRED</span>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="hidden sm:inline">Step {step} of {totalSteps}</span>
+            <div className="flex gap-1">
+              {Array.from({ length: totalSteps }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-2 w-8 rounded-full transition-colors ${
+                    i + 1 <= step ? "bg-primary" : "bg-secondary"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative mx-auto max-w-xl px-6 py-16">
+        {/* Role Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 flex justify-center"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/50 px-4 py-1.5 text-sm backdrop-blur">
+            {role === "institution" ? (
+              <Building2 className="h-3.5 w-3.5 text-primary" />
+            ) : (
+              <GraduationCap className="h-3.5 w-3.5 text-primary" />
+            )}
+            <span className="text-muted-foreground capitalize">{role} Onboarding</span>
+          </div>
+        </motion.div>
+
+        {/* Form Container */}
+        <div className="rounded-2xl border border-border/50 bg-card/50 p-8 backdrop-blur-xl">
+          <AnimatePresence mode="wait">
+            {/* Step 1: Basic Info */}
+            {step === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="text-center">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                    <User className="h-7 w-7 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-semibold">Personal Information</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Let&apos;s start with your basic details
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="Enter your full name"
+                      value={formData.name}
+                      onChange={(e) => updateFormData("name", e.target.value)}
+                      className="bg-secondary/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={formData.email}
+                        onChange={(e) => updateFormData("email", e.target.value)}
+                        className="bg-secondary/50 pl-10"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 2: Role-specific Info */}
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="text-center">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                    {role === "institution" ? (
+                      <Building2 className="h-7 w-7 text-primary" />
+                    ) : (
+                      <GraduationCap className="h-7 w-7 text-primary" />
+                    )}
+                  </div>
+                  <h2 className="text-xl font-semibold">
+                    {role === "institution" ? "Institution Details" : "Academic Details"}
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {role === "institution"
+                      ? "Tell us about your institution"
+                      : "Provide your academic information"}
+                  </p>
+                </div>
+
+                {role === "institution" ? (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="institutionName">Institution Name</Label>
+                      <Input
+                        id="institutionName"
+                        placeholder="e.g., Stanford University"
+                        value={formData.institutionName}
+                        onChange={(e) => updateFormData("institutionName", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="institutionType">Institution Type</Label>
+                      <select
+                        id="institutionType"
+                        value={formData.institutionType}
+                        onChange={(e) => updateFormData("institutionType", e.target.value)}
+                        className="w-full rounded-md border border-input bg-secondary/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <option value="">Select type...</option>
+                        <option value="university">University</option>
+                        <option value="college">College</option>
+                        <option value="vocational">Vocational School</option>
+                        <option value="certification">Certification Body</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="accreditationId">Accreditation ID (Optional)</Label>
+                      <Input
+                        id="accreditationId"
+                        placeholder="e.g., ACC-2024-001"
+                        value={formData.accreditationId}
+                        onChange={(e) => updateFormData("accreditationId", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="studentId">Student ID</Label>
+                      <Input
+                        id="studentId"
+                        placeholder="e.g., STU-2024-001"
+                        value={formData.studentId}
+                        onChange={(e) => updateFormData("studentId", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="university">University / Institution</Label>
+                      <Input
+                        id="university"
+                        placeholder="e.g., Stanford University"
+                        value={formData.university}
+                        onChange={(e) => updateFormData("university", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* Step 3: Confirmation */}
+            {step === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="text-center">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                    <FileText className="h-7 w-7 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-semibold">Review & Confirm</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Please review your information before submitting
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-border/50 bg-secondary/30 p-4">
+                    <h4 className="text-xs font-medium uppercase text-muted-foreground">Personal Info</h4>
+                    <div className="mt-3 space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Name</span>
+                        <span className="text-sm font-medium">{formData.name || "-"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Email</span>
+                        <span className="text-sm font-medium">{formData.email || "-"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-border/50 bg-secondary/30 p-4">
+                    <h4 className="text-xs font-medium uppercase text-muted-foreground">
+                      {role === "institution" ? "Institution Info" : "Academic Info"}
+                    </h4>
+                    <div className="mt-3 space-y-2">
+                      {role === "institution" ? (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Institution</span>
+                            <span className="text-sm font-medium">{formData.institutionName || "-"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Type</span>
+                            <span className="text-sm font-medium capitalize">{formData.institutionType || "-"}</span>
+                          </div>
+                          {formData.accreditationId && (
+                            <div className="flex justify-between">
+                              <span className="text-sm text-muted-foreground">Accreditation ID</span>
+                              <span className="text-sm font-medium">{formData.accreditationId}</span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Student ID</span>
+                            <span className="text-sm font-medium">{formData.studentId || "-"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">University</span>
+                            <span className="text-sm font-medium">{formData.university || "-"}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {role === "institution" && (
+                    <div className="rounded-xl border border-border/50 bg-primary/5 p-4">
+                      <div className="flex items-start gap-3">
+                        <Lock className="mt-0.5 h-5 w-5 text-primary" />
+                        <div>
+                          <h4 className="text-sm font-medium">Verification Required</h4>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Your institution will need to be verified by our HQ team before you can issue credentials. This typically takes 24-48 hours.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Navigation Buttons */}
+          <div className="mt-8 flex gap-3">
+            {step > 1 && (
+              <Button variant="outline" onClick={handleBack} className="flex-1 gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+            )}
+            {step < totalSteps ? (
+              <Button onClick={handleNext} disabled={!canProceed()} className="flex-1 gap-2">
+                Continue
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button onClick={handleSubmit} disabled={isSubmitting} className="flex-1 gap-2">
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="h-4 w-4" />
+                    Complete Setup
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    }>
+      <OnboardingContent />
+    </Suspense>
+  )
+}
