@@ -5,6 +5,7 @@ import { FileCheck, Eye, Share2, Shield, ArrowRight, Clock, CheckCircle2 } from 
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useUser } from "@/lib/user-context"
 
 const stats = [
   { 
@@ -50,6 +51,8 @@ const recentActivity = [
 ]
 
 export default function StudentDashboardPage() {
+  const { user } = useUser()
+
   return (
     <>
       <DashboardHeader 
@@ -67,7 +70,7 @@ export default function StudentDashboardPage() {
         >
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Welcome back, Alex!</h2>
+              <h2 className="text-xl font-semibold">Welcome back, {user?.name?.split(" ")[0] || "Student"}!</h2>
               <p className="mt-1 text-muted-foreground">
                 Your credentials are secure and verified on-chain.
               </p>

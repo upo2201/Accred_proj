@@ -170,13 +170,21 @@ function RoleSelectContent() {
             <Button
               size="lg"
               disabled={!selectedRole}
-              className="gap-2 px-8"
+              className="gap-2 px-8 w-full sm:w-auto"
             >
-              Continue
+              Create Account
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <p className="mt-4 text-sm text-muted-foreground">
+          
+          <div className="mt-6 text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/sign-in" className="text-primary font-medium hover:underline">
+              Sign In
+            </Link>
+          </div>
+
+          <p className="mt-6 text-xs text-muted-foreground">
             <Lock className="mr-1 inline h-3.5 w-3.5" />
             Your data is encrypted and secured on-chain
           </p>

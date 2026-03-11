@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { UserProvider } from '@/lib/user-context'
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -31,8 +32,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`} suppressHydrationWarning>
-        {children}
-        <Analytics />
+        <UserProvider>
+          {children}
+          <Analytics />
+        </UserProvider>
       </body>
     </html>
   )

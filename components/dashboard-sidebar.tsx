@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useUser } from "@/lib/user-context"
 import { motion } from "framer-motion"
 import { 
   Shield, 
@@ -37,6 +38,13 @@ export function DashboardSidebar({
   isVerified = true
 }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { logout } = useUser()
+
+  const handleLogout = () => {
+    logout()
+    router.push("/")
+  }
 
   const navItems = {
     hq: [
@@ -150,8 +158,14 @@ export function DashboardSidebar({
             <p className="text-sm font-medium truncate">{userName}</p>
             <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
           </div>
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <ChevronDown className="h-4 w-4" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
+            onClick={handleLogout}
+            title="Log out"
+          >
+            <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </div>

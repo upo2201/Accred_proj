@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { VerificationModal } from "@/components/verification-modal"
+import { useUser } from "@/lib/user-context"
 
 export default function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [showVerificationModal, setShowVerificationModal] = useState(false)
   const [verificationResult, setVerificationResult] = useState<"verified" | "not-found" | null>(null)
+  
+  const { user } = useUser()
 
   const handleVerification = (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,9 +42,20 @@ export default function LandingPage() {
             <Link href="/verify" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               Verify
             </Link>
-            <Link href="/role-select" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              Get Started
-            </Link>
+            {user ? (
+              <Link href={`/dashboard/${user.role}`} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href="/sign-in" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  Sign In
+                </Link>
+                <Link href="/role-select" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  Get Started
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -49,9 +63,9 @@ export default function LandingPage() {
               <Wallet className="h-4 w-4" />
               Connect Wallet
             </Button>
-            <Link href="/role-select">
+            <Link href={user ? `/dashboard/${user.role}` : "/role-select"}>
               <Button size="sm" className="gap-2">
-                Launch App
+                {user ? "Go to Dashboard" : "Launch App"}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>

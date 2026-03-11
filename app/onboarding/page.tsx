@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
+import { useUser } from "@/lib/user-context"
 
 interface FormData {
   name: string
@@ -32,6 +33,7 @@ function OnboardingContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const role = searchParams.get("role") as "student" | "institution" | null
+  const { updateUser } = useUser()
   
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -72,6 +74,14 @@ function OnboardingContent() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
+    // Save to context
+    updateUser({
+      name: formData.name,
+      email: formData.email,
+      role: role || "student",
+      ...(role === "institution" ? { institutionName: formData.institutionName, isVerified: false } : {})
+    })
+    
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000))
     setIsSubmitting(false)
