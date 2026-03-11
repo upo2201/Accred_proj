@@ -40,6 +40,7 @@ const mockExtractedData: ExtractedData[] = [
 ]
 
 const certificateTemplates = [
+  { id: 0, name: "Upload Custom Template", description: "Use your own custom credential design" },
   { id: 1, name: "Classic Academic", description: "Traditional formal design with serif typography" },
   { id: 2, name: "Modern Minimal", description: "Clean, contemporary design with bold accents" },
   { id: 3, name: "Prestigious Gold", description: "Elegant design with gold foil elements" },
@@ -336,7 +337,7 @@ export default function CreateCredentialPage() {
                 </p>
               </div>
 
-              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {certificateTemplates.map((template) => (
                   <button
                     key={template.id}
@@ -349,8 +350,15 @@ export default function CreateCredentialPage() {
                     )}
                   >
                     {/* Template Preview Placeholder */}
-                    <div className="aspect-[4/3] rounded-lg bg-secondary/50 flex items-center justify-center">
-                      <Palette className="h-8 w-8 text-muted-foreground" />
+                    <div className={cn(
+                      "aspect-[4/3] rounded-lg flex items-center justify-center",
+                      template.id === 0 ? "bg-primary/10 border-2 border-dashed border-primary/30" : "bg-secondary/50"
+                    )}>
+                      {template.id === 0 ? (
+                        <Upload className="h-8 w-8 text-primary" />
+                      ) : (
+                        <Palette className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
                     <h4 className="mt-4 font-medium">{template.name}</h4>
                     <p className="mt-1 text-xs text-muted-foreground">{template.description}</p>

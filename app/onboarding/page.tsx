@@ -16,9 +16,16 @@ interface FormData {
   institutionName?: string
   institutionType?: string
   accreditationId?: string
+  location?: string
+  govRegistered?: string
+  linkedin?: string
+  website?: string
   // Student specific
   studentId?: string
   university?: string
+  roll?: string
+  gpa?: string
+  dept?: string
 }
 
 function OnboardingContent() {
@@ -34,8 +41,15 @@ function OnboardingContent() {
     institutionName: "",
     institutionType: "",
     accreditationId: "",
+    location: "",
+    govRegistered: "",
+    linkedin: "",
+    website: "",
     studentId: "",
-    university: ""
+    university: "",
+    roll: "",
+    gpa: "",
+    dept: ""
   })
 
   const totalSteps = role === "institution" ? 3 : 3
@@ -76,9 +90,9 @@ function OnboardingContent() {
         return formData.name.trim() !== "" && formData.email.trim() !== ""
       case 2:
         if (role === "institution") {
-          return formData.institutionName?.trim() !== "" && formData.institutionType?.trim() !== ""
+          return formData.institutionName?.trim() !== "" && formData.institutionType?.trim() !== "" && formData.location?.trim() !== "" && formData.govRegistered?.trim() !== ""
         }
-        return formData.studentId?.trim() !== "" && formData.university?.trim() !== ""
+        return formData.studentId?.trim() !== "" && formData.university?.trim() !== "" && formData.roll?.trim() !== "" && formData.gpa?.trim() !== "" && formData.dept?.trim() !== ""
       case 3:
         return true
       default:
@@ -259,6 +273,51 @@ function OnboardingContent() {
                         className="bg-secondary/50"
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location</Label>
+                      <Input
+                        id="location"
+                        placeholder="e.g., California, USA"
+                        value={formData.location}
+                        onChange={(e) => updateFormData("location", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="govRegistered">Government Registered?</Label>
+                      <select
+                        id="govRegistered"
+                        value={formData.govRegistered}
+                        onChange={(e) => updateFormData("govRegistered", e.target.value)}
+                        className="w-full rounded-md border border-input bg-secondary/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <option value="">Select...</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                        <option value="Pending">Pending</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="linkedin">LinkedIn Profile (Optional)</Label>
+                      <Input
+                        id="linkedin"
+                        placeholder="https://linkedin.com/company/..."
+                        value={formData.linkedin}
+                        onChange={(e) => updateFormData("linkedin", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="website">Website Link (Optional)</Label>
+                      <Input
+                        id="website"
+                        type="url"
+                        placeholder="https://..."
+                        value={formData.website}
+                        onChange={(e) => updateFormData("website", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -279,6 +338,36 @@ function OnboardingContent() {
                         placeholder="e.g., Stanford University"
                         value={formData.university}
                         onChange={(e) => updateFormData("university", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="roll">Roll Number</Label>
+                      <Input
+                        id="roll"
+                        placeholder="e.g., CS-2024-05"
+                        value={formData.roll}
+                        onChange={(e) => updateFormData("roll", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="gpa">GPA</Label>
+                      <Input
+                        id="gpa"
+                        placeholder="e.g., 3.8"
+                        value={formData.gpa}
+                        onChange={(e) => updateFormData("gpa", e.target.value)}
+                        className="bg-secondary/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dept">Department</Label>
+                      <Input
+                        id="dept"
+                        placeholder="e.g., Computer Science"
+                        value={formData.dept}
+                        onChange={(e) => updateFormData("dept", e.target.value)}
                         className="bg-secondary/50"
                       />
                     </div>
@@ -342,6 +431,26 @@ function OnboardingContent() {
                               <span className="text-sm font-medium">{formData.accreditationId}</span>
                             </div>
                           )}
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Location</span>
+                            <span className="text-sm font-medium">{formData.location || "-"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Gov. Registered</span>
+                            <span className="text-sm font-medium">{formData.govRegistered || "-"}</span>
+                          </div>
+                          {formData.linkedin && (
+                            <div className="flex justify-between">
+                              <span className="text-sm text-muted-foreground">LinkedIn</span>
+                              <span className="text-sm font-medium truncate max-w-[150px]">{formData.linkedin}</span>
+                            </div>
+                          )}
+                          {formData.website && (
+                            <div className="flex justify-between">
+                              <span className="text-sm text-muted-foreground">Website</span>
+                              <span className="text-sm font-medium truncate max-w-[150px]">{formData.website}</span>
+                            </div>
+                          )}
                         </>
                       ) : (
                         <>
@@ -352,6 +461,18 @@ function OnboardingContent() {
                           <div className="flex justify-between">
                             <span className="text-sm text-muted-foreground">University</span>
                             <span className="text-sm font-medium">{formData.university || "-"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Roll Number</span>
+                            <span className="text-sm font-medium">{formData.roll || "-"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">GPA</span>
+                            <span className="text-sm font-medium">{formData.gpa || "-"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Department</span>
+                            <span className="text-sm font-medium">{formData.dept || "-"}</span>
                           </div>
                         </>
                       )}
